@@ -16,7 +16,7 @@ def get_files_info(working_directory, directory="."):
     try:
         return build_metadata_str(abs_path, directory)
     except Exception as e:
-        return f"Error: {e}"
+        return f"Error listing files: {e}"
 
 
 def build_metadata_str(abs_path, directory):
