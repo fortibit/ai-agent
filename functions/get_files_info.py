@@ -13,16 +13,22 @@ def get_files_info(working_directory, directory="."):
     # Check if the directory argument is a directory
     if not os.path.isdir(abs_path):
         return f'Error: "{directory}" is not a directory'
-    
-    return build_metadata_str(abs_path)
+    try:
+        return build_metadata_str(abs_path, directory)
+    except Exception as e:
+        return f"Error: {e}"
 
 
-def build_metadata_str(abs_path):
+def build_metadata_str(abs_path, directory):
     # file metadata tuples (str file/dir name, int size, bool isdir)
     files_info = []
-    
+
     # list of strings, one per file
-    files_str = []
+    # Add standard string
+    if directory == ".":
+        files_str = [f"Result for current directory:"]
+    else:
+        files_str = [f"Result for '{directory}' directory:"]
 
     # List filenames
     dir_content = os.listdir(abs_path)
@@ -37,6 +43,7 @@ def build_metadata_str(abs_path):
     # Convert data into string
     for file in files_info:
         files_str.append(f" - {file[0]}: file_size={file[1]} bytes, is_dir={file[2]}")
+
     # Files_info one per line
     return "\n".join(files_str)
     
