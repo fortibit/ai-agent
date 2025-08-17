@@ -25,8 +25,8 @@ def check_path(abs_working_dir_path, abs_file_path, file_path):
 
 
 def read_file(file_path):
-    with open(file_path, "r") as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         file_content_string = f.read(MAX_CHARS)
-        if len(file_content_string) > MAX_CHARS:
-            file_content_string += '[...File "{file_path}" truncated at 10000 characters]'
+        if len(f.read()) > MAX_CHARS:
+            file_content_string += f'[...File "{file_path.split("/")[-1]}" truncated at {MAX_CHARS} characters]'
         return file_content_string
