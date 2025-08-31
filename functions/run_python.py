@@ -57,7 +57,7 @@ schema_run_python_file = types.FunctionDeclaration(
                 description="The file path of the file to execute, relative to the working directory.",
             ),
             "args": types.Schema(
-                type=types.Type.ARRAY,
+                type=types.Type.STRING,
                 description="List of additional optional arguments to add to the command.",
             ),
         },
