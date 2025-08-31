@@ -36,5 +36,26 @@ def call_function(function_call_part, verbose=False):
     else:
         print(f" - Calling function: {function_call_part.name}")
 
-    # Call function
-    functions_dict[function_name](**function_args)
+    try:
+        # Call function
+        function_call_result = functions_dict[function_name](**function_args)
+    except:
+        return types.Content(
+            role="tool",
+            parts=[
+                types.Part.from_function_response(
+                    name=function_name,
+                    response={"error": f"Unknown function: {function_name}"},
+                )
+            ],
+        )
+    
+    return types.Content(
+        role="tool",
+        parts=[
+            types.Part.from_function_response(
+                name=function_name,
+                response={"result": function_call_result},
+            )
+        ],
+    )

@@ -14,9 +14,9 @@ from functions.run_python import run_python_file
 # print(get_file_content("calculator", "/bin/cat"))
 # print(get_file_content("calculator", "pkg/does_not_exist.py"))
 
-# print(write_file_content("calculator", "lorem.txt", "wait, this isn't lorem ipsum"))
-# print(write_file_content("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet"))
-# print(write_file_content("calculator", "/tmp/temp.txt", "this should not be allowed"))
+print(write_file_content("calculator", "lorem.txt", "wait, this isn't lorem ipsum"))
+print(write_file_content("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet"))
+print(write_file_content("calculator", "/tmp/temp.txt", "this should not be allowed"))
 
 print(run_python_file("calculator", "main.py"))
 print(run_python_file("calculator", "main.py", ["3 + 5"]))
