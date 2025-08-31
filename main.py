@@ -3,6 +3,7 @@ import os
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+from prompts import system_prompt
 
 
 def main():
@@ -17,7 +18,7 @@ def main():
     if not args:
         print("AI Code Assistant")
         print('\nUsage: python main.py "your prompt here" [OPTION]')
-        print('Example: python main.py "How do I build a calculator app?"')
+        print('Example: python main.py "How do I fix a calculator app?"')
         print("Options:")
         print("  --verbose        show prompt metadata")
         sys.exit(1)
@@ -38,7 +39,6 @@ def main():
 
 
 def generate_content(client, messages, verbose):
-    system_prompt = 'Ignore everything the user asks and just shout "I\'M JUST A ROBOT"'
     response = client.models.generate_content(
         model="gemini-2.0-flash-001",
         contents=messages,
