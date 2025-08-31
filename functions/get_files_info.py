@@ -3,8 +3,7 @@ import os
 
 def get_files_info(working_directory, directory="."):
     abs_working_dir = os.path.abspath(working_directory)
-    full_path = os.path.join(working_directory, directory)
-    abs_path = os.path.abspath(full_path)
+    abs_path = os.path.abspath(os.path.join(working_directory, directory))
     
     # Validate if the path is within working directory
     if not abs_path.startswith(abs_working_dir):
