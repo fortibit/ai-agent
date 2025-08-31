@@ -53,13 +53,13 @@ def generate_content(client, messages, verbose):
     response_tokens = response.usage_metadata.candidates_token_count
     if verbose:
         print(f"Prompt tokens: {prompt_tokens}")
-        print(f"Response tokens: {response_tokens}")
+        print(f"Response tokens: {response_tokens}\n")
 
     if not response.function_calls:
         return response.text
 
     for function_call_part in response.function_calls:
-        call_function(function_call_part, verbose=True)
+        call_function(function_call_part, verbose)
 
 
 if __name__ == "__main__":
