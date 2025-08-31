@@ -54,7 +54,7 @@ def generate_content(client, messages, verbose):
     if verbose:
         print(f"Prompt tokens: {prompt_tokens}")
         print(f"Response tokens: {response_tokens}")
-    
+
     if not response.function_calls:
         return response.text
 
