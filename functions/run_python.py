@@ -1,6 +1,5 @@
 import os
 import subprocess
-
 from google.genai import types
 
 
@@ -48,18 +47,23 @@ def check_path(working_directory, file_path):
 
 schema_run_python_file = types.FunctionDeclaration(
     name="run_python_file",
-    description="Executes Python file provided as the file path relative to working directory.",
+    description="Executes Python file provided as the file path relative to working directory, returns the output of the interpreter.",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
             "file_path": types.Schema(
                 type=types.Type.STRING,
-                description="The file path of the file to execute, relative to the working directory.",
+                description="The file path of the Python file to execute, relative to the working directory.",
             ),
             "args": types.Schema(
-                type=types.Type.STRING,
-                description="List of additional optional arguments to add to the command.",
+                type=types.Type.ARRAY,
+                items=types.Schema(
+                    type=types.Type.STRING,
+                    description="Optional arguments to add to the command.",
+                ),
+                description="Optional arguments to add to the command.",
             ),
         },
+        required=["file_path"],
     ),
 )
