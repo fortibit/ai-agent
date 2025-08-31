@@ -1,5 +1,4 @@
 import os
-
 from google.genai import types
 
 
@@ -32,9 +31,9 @@ def create_dirs(file_path):
         return f"Error: {e}"
 
 
-schema_write_file = types.FunctionDeclaration(
-    name="write_file",
-    description="Writes specified content to the file specified in file path relative to the working directory.",
+schema_write_file_content = types.FunctionDeclaration(
+    name="write_file_content",
+    description="Writes specified content to the file specified in file path relative to the working directory. If the file doesn't exist - creates it",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
@@ -47,5 +46,6 @@ schema_write_file = types.FunctionDeclaration(
                 description="Content which should be written to a file.",
             ),
         },
+        required=["file_path", "content"],
     ),
 )
