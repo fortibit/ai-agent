@@ -37,7 +37,8 @@ def main():
         types.Content(role="user", parts=[types.Part(text=user_prompt)]),
     ]
 
-    generate_content(client, messages, verbose)
+    # Returns a list of responses
+    response_content = generate_content(client, messages, verbose)
 
 
 def generate_content(client, messages, verbose):
@@ -49,6 +50,8 @@ def generate_content(client, messages, verbose):
         ),
     )
 
+    # TODO iterate response.candidates and add each candidate.content to messages list
+
     prompt_tokens = response.usage_metadata.prompt_token_count
     response_tokens = response.usage_metadata.candidates_token_count
     if verbose:
@@ -58,7 +61,7 @@ def generate_content(client, messages, verbose):
     if not response.function_calls:
         return response.text
 
-    # Call functions
+    # Call functions and store them in list of parts function_responses
     function_responses = []
     for function_call_part in response.function_calls:
         function_call_result = call_function(function_call_part, verbose)
@@ -72,9 +75,14 @@ def generate_content(client, messages, verbose):
         elif verbose:
             print(f"-> {function_call_result.parts[0].function_response.response}")
         function_responses.append(function_call_result.parts[0])
+
+    # TODO: convert function_responses list of parts (single message with role = "tool") to message with role = "user"
+    # TODO: append this message to messages
     
     if not function_responses:
         raise Exception("No function responses generated, exiting.")
+    
+    return function_responses
 
 if __name__ == "__main__":
     main()
