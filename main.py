@@ -20,10 +20,8 @@ def main():
 
     if not args:
         print("AI Code Assistant")
-        print('\nUsage: python main.py "your prompt here" [OPTION]')
-        print('Example: python main.py "How do I fix a calculator app?"')
-        print("Options:")
-        print("  --verbose        show prompt metadata")
+        print('\nUsage: python main.py "your prompt here" [--verbose]')
+        print('Example: python main.py "How do I fix the calculator?"')
         sys.exit(1)
 
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -37,12 +35,7 @@ def main():
     messages = [
         types.Content(role="user", parts=[types.Part(text=user_prompt)]),
     ]
-    
-    # Form final output string
-    final_response = []
-    final_response.append("Final response:")
 
-    # Loop max 20 times 
     iters = 0
     while True:
         iters += 1
@@ -51,13 +44,13 @@ def main():
             sys.exit(1)
 
         try:
-            final_response_text = generate_content(client, messages, verbose)
-            if final_response_text:
-                final_response.append(final_response_text)
-                print("\n".join(final_response))
+            final_response = generate_content(client, messages, verbose)
+            if final_response:
+                print("Final response:")
+                print(final_response)
                 break
         except Exception as e:
-            print(f"Error generating response: {e}")
+            print(f"Error in generate_content: {e}")
 
 
 def generate_content(client, messages, verbose):
@@ -68,14 +61,10 @@ def generate_content(client, messages, verbose):
             tools=[available_functions], system_instruction=system_prompt
         ),
     )
-
-    prompt_tokens = response.usage_metadata.prompt_token_count
-    response_tokens = response.usage_metadata.candidates_token_count
     if verbose:
-        print(f"Prompt tokens: {prompt_tokens}")
-        print(f"Response tokens: {response_tokens}\n")
+        print("Prompt tokens:", response.usage_metadata.prompt_token_count)
+        print("Response tokens:", response.usage_metadata.candidates_token_count)
 
-    # Iterate over response.candidates and add each candidate.content to messages list with role "model"
     if response.candidates:
         for candidate in response.candidates:
             function_call_content = candidate.content
@@ -84,26 +73,22 @@ def generate_content(client, messages, verbose):
     if not response.function_calls:
         return response.text
 
-    # Call functions and store them in list of parts function_responses
     function_responses = []
     for function_call_part in response.function_calls:
         function_call_result = call_function(function_call_part, verbose)
-
-        # If results are empty raise exception
         if (
-            not function_call_result.parts[0].function_response.response
-            or not function_call_result.parts
+            not function_call_result.parts
+            or not function_call_result.parts[0].function_response
         ):
-            raise Exception ("Error: Function call result empty")
-        elif verbose:
+            raise Exception("empty function call result")
+        if verbose:
             print(f"-> {function_call_result.parts[0].function_response.response}")
         function_responses.append(function_call_result.parts[0])
 
     if not function_responses:
-        raise Exception("No function responses generated, exiting.")
-    
-    # append function response to messages with role "user"
-    messages.append(types.Content(parts=function_responses, role="user"))
+        raise Exception("no function responses generated, exiting.")
+
+    messages.append(types.Content(role="user", parts=function_responses))
 
 if __name__ == "__main__":
     main()

@@ -2,48 +2,41 @@ import os
 from google.genai import types
 
 
-def write_file_content(working_directory, file_path, content):
+def write_file(working_directory, file_path, content):
     abs_working_dir = os.path.abspath(working_directory)
     abs_file_path = os.path.abspath(os.path.join(working_directory, file_path))
-
     if not abs_file_path.startswith(abs_working_dir):
         return f'Error: Cannot write to "{file_path}" as it is outside the permitted working directory'
-
-    # Create dir if it doesn't extist
-    create_dirs(file_path)
-
+    if not os.path.exists(abs_file_path):
+        try:
+            os.makedirs(os.path.dirname(abs_file_path), exist_ok=True)
+        except Exception as e:
+            return f"Error: creating directory: {e}"
+    if os.path.exists(abs_file_path) and os.path.isdir(abs_file_path):
+        return f'Error: "{file_path}" is a directory, not a file'
     try:
-        # Write content to file
         with open(abs_file_path, "w") as f:
             f.write(content)
         return (
             f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
         )
     except Exception as e:
-        return f"Error: {e}"
+        return f"Error: writing to file: {e}"
 
 
-def create_dirs(file_path):
-    try:
-        if not os.path.exists(file_path):
-            os.makedirs(os.path.dirname(file_path))
-    except Exception as e:
-        return f"Error: {e}"
-
-
-schema_write_file_content = types.FunctionDeclaration(
-    name="write_file_content",
-    description="Writes specified content to the file specified in file path relative to the working directory. If the file doesn't exist - creates it",
+schema_write_file = types.FunctionDeclaration(
+    name="write_file",
+    description="Writes content to a file within the working directory. Creates the file if it doesn't exist.",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
             "file_path": types.Schema(
                 type=types.Type.STRING,
-                description="The file path of the file to be written to, relative to the working directory.",
+                description="Path to the file to write, relative to the working directory.",
             ),
             "content": types.Schema(
                 type=types.Type.STRING,
-                description="Content which should be written to a file.",
+                description="Content to write to the file",
             ),
         },
         required=["file_path", "content"],
