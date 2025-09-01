@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 from prompts import system_prompt
 from call_functions import available_functions, call_function
+from config import MAX_ITERS
 
 
 def main():
@@ -42,18 +43,21 @@ def main():
     final_response.append("Final response:")
 
     # Loop max 20 times 
-    for i in range(0, 20):
+    iters = 0
+    while True:
+        iters += 1
+        if iters > MAX_ITERS:
+            print(f"Maximum iterations ({MAX_ITERS}) reached.")
+            sys.exit(1)
+
         try:
             final_response_text = generate_content(client, messages, verbose)
             if final_response_text:
                 final_response.append(final_response_text)
                 print("\n".join(final_response))
                 break
-            else:
-                i += 1
-                continue
         except Exception as e:
-            final_response.append(f"Error generating response: {e}")
+            print(f"Error generating response: {e}")
 
 
 def generate_content(client, messages, verbose):
@@ -65,15 +69,17 @@ def generate_content(client, messages, verbose):
         ),
     )
 
-    # Iterate over response.candidates and add each candidate.content to messages list with role "model"
-    for candidate in response.candidates:
-        messages.append(candidate.content)
-
     prompt_tokens = response.usage_metadata.prompt_token_count
     response_tokens = response.usage_metadata.candidates_token_count
     if verbose:
         print(f"Prompt tokens: {prompt_tokens}")
         print(f"Response tokens: {response_tokens}\n")
+
+    # Iterate over response.candidates and add each candidate.content to messages list with role "model"
+    if response.candidates:
+        for candidate in response.candidates:
+            function_call_content = candidate.content
+            messages.append(function_call_content)
 
     if not response.function_calls:
         return response.text
