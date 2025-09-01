@@ -37,7 +37,11 @@ def main():
         types.Content(role="user", parts=[types.Part(text=user_prompt)]),
     ]
 
+    # TODO: loop content generator max 20 times
+    # TODO: try-except to handle errors
     generate_content(client, messages, verbose)
+    # TODO: after each call check for response.text property existance. If found print it and break loop
+    # TODO: else continue to max 20 times
 
 
 def generate_content(client, messages, verbose):
