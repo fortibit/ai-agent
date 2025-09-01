@@ -36,12 +36,24 @@ def main():
     messages = [
         types.Content(role="user", parts=[types.Part(text=user_prompt)]),
     ]
+    
+    # Form final output string
+    final_response = []
+    final_response.append("Final response:")
 
-    # TODO: loop content generator max 20 times
-    # TODO: try-except to handle errors
-    generate_content(client, messages, verbose)
-    # TODO: after each call check for response.text property existance. If found print it and break loop
-    # TODO: else continue to max 20 times
+    # Loop max 20 times 
+    for i in range(0, 20):
+        try:
+            final_response_text = generate_content(client, messages, verbose)
+            if final_response_text:
+                final_response.append(final_response_text)
+                print("\n".join(final_response))
+                break
+            else:
+                i += 1
+                continue
+        except Exception as e:
+            final_response.append(f"Error generating response: {e}")
 
 
 def generate_content(client, messages, verbose):
